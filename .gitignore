@@ -1,0 +1,55 @@
+# === Laravel (backend/) ===
+backend/vendor
+backend/.env
+backend/.env.backup
+backend/.env.production
+backend/.phpunit.result.cache
+backend/storage/*.key
+backend/storage/app/*
+!backend/storage/app/.gitkeep
+backend/storage/framework/cache/*
+!backend/storage/framework/cache/.gitkeep
+backend/storage/framework/sessions/*
+!backend/storage/framework/sessions/.gitkeep
+backend/storage/framework/views/*
+!backend/storage/framework/views/.gitkeep
+backend/storage/framework/testing/*
+backend/storage/logs/*
+!backend/storage/logs/.gitkeep
+backend/bootstrap/cache/*.php
+!backend/bootstrap/cache/.gitignore
+backend/public/hot
+backend/public/storage
+backend/public/build
+
+# === Node / React (repo root) ===
+node_modules
+dist
+dist-ssr
+.vite
+*.local
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+coverage
+
+# === Env files ===
+.env
+.env.local
+.env.*.local
+
+# === Docker / deploy artifacts ===
+docker/certbot/conf
+docker/certbot/www
+docker/nginx/active.conf
+version.json
+
+# === Editors / OS ===
+.DS_Store
+Thumbs.db
+.idea
+.vscode/*
+!.vscode/extensions.json
+*.log
+*.swp
