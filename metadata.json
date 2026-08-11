@@ -1,0 +1,6 @@
+{
+  "name": "doacaoCuba",
+  "description": "Plataforma de doações humanitárias para apoiar o povo cubano diante da crise econômica, com transparência e prestação de contas.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
