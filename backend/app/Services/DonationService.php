@@ -10,6 +10,26 @@ use Illuminate\Support\Str;
 
 class DonationService
 {
+    /**
+     * Mapa do campo `status` retornado por GET /payments/{id} na Asaas para o status interno
+     * da doação. Os valores aqui diferem dos nomes de evento usados em AsaasWebhookController::STATUS_MAP.
+     *
+     * @var array<string, string>
+     */
+    private const PAYMENT_STATUS_MAP = [
+        'CONFIRMED' => 'concluido',
+        'RECEIVED' => 'concluido',
+        'RECEIVED_IN_CASH' => 'concluido',
+        'PENDING' => 'pendente',
+        'AWAITING_RISK_ANALYSIS' => 'pendente',
+        'OVERDUE' => 'pendente',
+        'DELETED' => 'cancelado',
+        'REFUNDED' => 'cancelado',
+        'REFUND_REQUESTED' => 'cancelado',
+        'CHARGEBACK_REQUESTED' => 'cancelado',
+        'CHARGEBACK_DISPUTE' => 'cancelado',
+    ];
+
     public function __construct(private readonly AsaasService $asaasService) {}
 
     /**
@@ -97,6 +117,26 @@ class DonationService
             'boleto' => now()->addDays(3)->toDateString(),
             default => now()->toDateString(),
         };
+    }
+
+    /**
+     * Consulta o status atual da cobrança na Asaas e atualiza a doação local se ele tiver mudado.
+     * Usado pelo polling do front-end enquanto o webhook não é alcançável (ex.: localhost).
+     */
+    public function checkStatus(Donation $donation): Donation
+    {
+        if (in_array($donation->status, ['concluido', 'cancelado'], true) || ! $donation->asaas_payment_id) {
+            return $donation;
+        }
+
+        $payment = $this->asaasService->fetchPayment($donation->asaas_payment_id);
+        $newStatus = self::PAYMENT_STATUS_MAP[$payment['status'] ?? ''] ?? null;
+
+        if ($newStatus !== null && $newStatus !== $donation->status) {
+            $donation->update(['status' => $newStatus]);
+        }
+
+        return $donation;
     }
 
     public function listForUser(User $user, int $perPage = 15): LengthAwarePaginator

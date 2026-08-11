@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\DonationRequest;
 use App\Http\Resources\DonationResource;
+use App\Models\Donation;
 use App\Services\DonationService;
 use App\Traits\ApiResponse;
 use Illuminate\Http\JsonResponse;
@@ -34,6 +35,19 @@ class DonationController extends Controller
             'Cobrança gerada com sucesso. Conclua o pagamento para confirmar sua doação.',
             201,
         );
+    }
+
+    public function status(string $transactionHash): JsonResponse
+    {
+        $donation = Donation::where('transaction_hash', $transactionHash)->firstOrFail();
+
+        try {
+            $donation = $this->donationService->checkStatus($donation);
+        } catch (RuntimeException $e) {
+            return $this->error($e->getMessage(), 502);
+        }
+
+        return $this->success(['donation' => new DonationResource($donation)]);
     }
 
     public function myHistory(Request $request): JsonResponse

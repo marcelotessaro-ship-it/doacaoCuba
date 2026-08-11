@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Modal } from '../ui/Modal';
 import { Button } from '../ui/Button';
 import { Input } from '../ui/Input';
@@ -34,6 +34,24 @@ export function DonationFlowModal({ isOpen, onClose }: DonationFlowModalProps) {
   const [donation, setDonation] = useState<Donation | null>(null);
 
   const needsCpf = !user?.cpf;
+
+  // Consulta a Asaas a cada 5s enquanto o pagamento está pendente: em localhost o
+  // webhook não é alcançável, então essa é a única forma de detectar a confirmação.
+  useEffect(() => {
+    if (step !== 3 || !donation) return;
+    if (donation.status === 'concluido' || donation.status === 'cancelado') return;
+
+    const intervalId = window.setInterval(async () => {
+      try {
+        const updated = await donationService.checkStatus(donation.transaction_hash);
+        setDonation(updated);
+      } catch {
+        // Falha silenciosa: mantém o status atual e tenta novamente no próximo ciclo.
+      }
+    }, 5000);
+
+    return () => window.clearInterval(intervalId);
+  }, [step, donation]);
 
   function reset() {
     setStep(1);

@@ -26,7 +26,7 @@ class UserSeeder extends Seeder
                 'name' => 'Carlos Eduardo Silva',
                 'password' => Hash::make('123456'),
                 'role' => 'visitor',
-                'cpf' => '111.111.111-11',
+                'cpf' => '111.444.777-35',
                 'phone' => '(11) 99999-0000',
                 'street' => 'Rua das Flores',
                 'number' => '123',

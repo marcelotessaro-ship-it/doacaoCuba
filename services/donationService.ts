@@ -27,4 +27,11 @@ export const donationService = {
     const { data } = await apiClient.get<ApiEnvelope<DonationsListData>>('/donations/me');
     return data.data;
   },
+
+  async checkStatus(transactionHash: string): Promise<Donation> {
+    const { data } = await apiClient.get<ApiEnvelope<{ donation: Donation }>>(
+      `/donations/${transactionHash}/status`,
+    );
+    return data.data.donation;
+  },
 };

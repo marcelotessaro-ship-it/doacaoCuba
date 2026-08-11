@@ -78,6 +78,20 @@ class AsaasService
         return $response->json();
     }
 
+    /**
+     * Consulta o status atual de uma cobrança diretamente na Asaas (usado no polling do front,
+     * já que o webhook não alcança o backend em ambiente local).
+     *
+     * @return array<string, mixed>
+     */
+    public function fetchPayment(string $paymentId): array
+    {
+        $response = $this->request()->get("/payments/{$paymentId}");
+        $this->ensureSuccessful($response, 'Não foi possível consultar o status da cobrança no Asaas.');
+
+        return $response->json();
+    }
+
     private function request(): PendingRequest
     {
         return Http::baseUrl($this->baseUrl)

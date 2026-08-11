@@ -19,6 +19,7 @@ Route::prefix('auth')->group(function () {
 });
 
 Route::post('/donations', [DonationController::class, 'store']);
+Route::get('/donations/{transactionHash}/status', [DonationController::class, 'status']);
 Route::middleware('auth:sanctum')->get('/donations/me', [DonationController::class, 'myHistory']);
 
 Route::post('/webhooks/asaas', [AsaasWebhookController::class, 'handle']);

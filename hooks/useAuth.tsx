@@ -1,5 +1,6 @@
 import { createContext, useContext, useEffect, useState, type ReactNode } from 'react';
 import { authService, type LoginPayload, type RegisterPayload } from '../services/authService';
+import { profileService } from '../services/profileService';
 import type { User } from '../utils/types';
 
 interface AuthContextValue {
@@ -27,7 +28,20 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
     if (storedToken && storedUser) {
       setUser(JSON.parse(storedUser) as User);
+
+      profileService
+        .get()
+        .then((freshUser) => {
+          localStorage.setItem(USER_KEY, JSON.stringify(freshUser));
+          setUser(freshUser);
+        })
+        .catch(() => {
+          // Mantém os dados em cache se a atualização falhar (ex.: offline).
+        })
+        .finally(() => setIsLoading(false));
+      return;
     }
+
     setIsLoading(false);
   }, []);
 

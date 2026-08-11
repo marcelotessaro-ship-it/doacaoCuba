@@ -1,32 +1,40 @@
-import { CheckCircle2, Clock } from 'lucide-react';
+import { CheckCircle2, Clock, XCircle } from 'lucide-react';
 import { PAYMENT_METHOD_META } from '../../utils/constants';
 import { formatCurrencyBRL, formatDateTime } from '../../utils/formatters';
 import type { Donation } from '../../utils/types';
 
 export function DonationReceipt({ donation }: { donation: Donation }) {
   const isConcluded = donation.status === 'concluido';
+  const isCancelled = donation.status === 'cancelado';
+  const isPending = !isConcluded && !isCancelled;
 
   return (
     <div className="flex flex-col items-center gap-4 text-center">
       <span
         className={`flex h-16 w-16 items-center justify-center rounded-full ${
-          isConcluded ? 'bg-emerald-500/15 text-emerald-400' : 'bg-amber-500/15 text-amber-400'
+          isConcluded
+            ? 'bg-emerald-500/15 text-emerald-400'
+            : isCancelled
+              ? 'bg-rose-500/15 text-rose-400'
+              : 'bg-amber-500/15 text-amber-400'
         }`}
       >
-        {isConcluded ? <CheckCircle2 size={32} /> : <Clock size={32} />}
+        {isConcluded ? <CheckCircle2 size={32} /> : isCancelled ? <XCircle size={32} /> : <Clock size={32} />}
       </span>
       <div>
         <h3 className="text-xl font-black text-slate-50">
-          {isConcluded ? 'Doação confirmada!' : 'Falta pouco! Conclua o pagamento'}
+          {isConcluded ? 'Doação confirmada!' : isCancelled ? 'Cobrança cancelada' : 'Falta pouco! Conclua o pagamento'}
         </h3>
         <p className="mt-1 text-sm text-slate-400">
           {isConcluded
             ? `Muito obrigado, ${donation.donor_name}. Seu apoio faz a diferença.`
-            : 'Assim que o pagamento for compensado, sua doação será confirmada automaticamente.'}
+            : isCancelled
+              ? 'Essa cobrança foi cancelada ou estornada. Caso queira doar novamente, inicie um novo pagamento.'
+              : 'Assim que o pagamento for compensado, sua doação será confirmada automaticamente.'}
         </p>
       </div>
 
-      {!isConcluded && donation.payment_method === 'pix' && donation.pix_qr_code && (
+      {isPending && donation.payment_method === 'pix' && donation.pix_qr_code && (
         <div className="flex w-full flex-col items-center gap-3">
           <img
             src={`data:image/png;base64,${donation.pix_qr_code}`}
@@ -42,7 +50,7 @@ export function DonationReceipt({ donation }: { donation: Donation }) {
         </div>
       )}
 
-      {!isConcluded && donation.payment_method === 'boleto' && (donation.boleto_url || donation.invoice_url) && (
+      {isPending && donation.payment_method === 'boleto' && (donation.boleto_url || donation.invoice_url) && (
         <a
           href={donation.boleto_url ?? donation.invoice_url ?? '#'}
           target="_blank"
@@ -53,7 +61,7 @@ export function DonationReceipt({ donation }: { donation: Donation }) {
         </a>
       )}
 
-      {!isConcluded && donation.payment_method === 'credit_card' && donation.invoice_url && (
+      {isPending && donation.payment_method === 'credit_card' && donation.invoice_url && (
         <a
           href={donation.invoice_url}
           target="_blank"

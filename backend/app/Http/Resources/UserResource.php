@@ -28,7 +28,7 @@ class UserResource extends JsonResource
                 'cep' => $this->cep,
                 'country' => $this->country,
             ],
-            'total_donated' => (float) $this->donations()->sum('amount'),
+            'total_donated' => (float) $this->donations()->where('status', 'concluido')->sum('amount'),
             'created_at' => $this->created_at?->toIso8601String(),
         ];
     }

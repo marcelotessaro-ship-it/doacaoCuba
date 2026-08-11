@@ -18,14 +18,15 @@ class DonationRequest extends FormRequest
     {
         $user = $this->user('sanctum');
         $donorCpfRequired = ! $user || ! $user->cpf;
+        $donorNameEmailRequired = ! $user;
 
         return [
             'amount' => ['required', 'numeric', 'min:1'],
             'payment_method' => ['required', 'in:pix,credit_card,boleto'],
             'frequency' => ['nullable', 'in:unica,mensal'],
             'is_anonymous' => ['nullable', 'boolean'],
-            'donor_name' => ['required', 'string', 'max:255'],
-            'donor_email' => ['required', 'email', 'max:255'],
+            'donor_name' => [$donorNameEmailRequired ? 'required' : 'nullable', 'string', 'max:255'],
+            'donor_email' => [$donorNameEmailRequired ? 'required' : 'nullable', 'email', 'max:255'],
             'donor_cpf' => [$donorCpfRequired ? 'required' : 'nullable', 'string', 'max:20'],
             'donor_street' => ['nullable', 'string', 'max:255'],
             'donor_number' => ['nullable', 'string', 'max:20'],
