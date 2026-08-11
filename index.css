@@ -1,0 +1,96 @@
+@import "tailwindcss";
+
+@layer base {
+  body {
+    @apply text-slate-100 font-sans antialiased selection:bg-emerald-500 selection:text-slate-950 min-h-screen overflow-x-hidden;
+    background: radial-gradient(circle at top left, #1e293b, #0f172a), linear-gradient(135deg, rgba(20, 83, 45, 0.2) 0%, rgba(30, 58, 138, 0.2) 100%);
+    background-color: #0f172a;
+    background-attachment: fixed;
+  }
+}
+
+/* Glassmorphism utilities (RNF-01) */
+.glass-panel {
+  background: rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.4);
+}
+
+.glass-panel-light {
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.10);
+  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.25);
+}
+
+.glass-card {
+  background: rgba(255, 255, 255, 0.06);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.3);
+}
+
+.glass-card-hover {
+  transition: all 0.3s ease;
+}
+
+.glass-card-hover:hover {
+  border-color: rgba(52, 211, 153, 0.4);
+  box-shadow: 0 12px 40px -10px rgba(52, 211, 153, 0.25);
+  transform: translateY(-2px);
+}
+
+.glass-input {
+  background: rgba(0, 0, 0, 0.25);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  backdrop-filter: blur(10px);
+  color: #f8fafc;
+}
+
+.glass-input:focus {
+  outline: none;
+  border-color: #34d399;
+  box-shadow: 0 0 0 2px rgba(52, 211, 153, 0.25);
+}
+
+/* Cuban Decay & Hope theme background (RNF-03) */
+.cuba-decay-bg {
+  background: radial-gradient(circle at top left, #1e293b, #0f172a), linear-gradient(135deg, rgba(20, 83, 45, 0.2) 0%, rgba(30, 58, 138, 0.2) 100%);
+  background-color: #0f172a;
+}
+
+.cuba-decay-texture {
+  background-image: repeating-linear-gradient(45deg, transparent, transparent 40px, rgba(255,255,255,0.02) 40px, rgba(255,255,255,0.02) 41px);
+}
+
+/* Glow effects */
+.glow-emerald {
+  box-shadow: 0 0 25px -5px rgba(52, 211, 153, 0.4);
+}
+
+.glow-cyan {
+  box-shadow: 0 0 25px -5px rgba(96, 165, 250, 0.4);
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: rgba(15, 23, 42, 0.8);
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(52, 211, 153, 0.3);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(52, 211, 153, 0.6);
+}
