@@ -45,8 +45,8 @@ class DonationSeeder extends Seeder
             [
                 'transaction_hash' => 'DEMO-0005',
                 'amount' => 15.00,
-                'payment_method' => 'crypto',
-                'status' => 'concluido',
+                'payment_method' => 'boleto',
+                'status' => 'pendente',
                 'is_anonymous' => true,
                 'created_at' => now(),
             ],

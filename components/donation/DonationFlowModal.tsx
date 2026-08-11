@@ -29,8 +29,11 @@ export function DonationFlowModal({ isOpen, onClose }: DonationFlowModalProps) {
   const [paymentMethod, setPaymentMethod] = useState<PaymentMethod | null>(null);
   const [donorName, setDonorName] = useState('');
   const [donorEmail, setDonorEmail] = useState('');
+  const [donorCpf, setDonorCpf] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [donation, setDonation] = useState<Donation | null>(null);
+
+  const needsCpf = !user?.cpf;
 
   function reset() {
     setStep(1);
@@ -39,6 +42,7 @@ export function DonationFlowModal({ isOpen, onClose }: DonationFlowModalProps) {
     setPaymentMethod(null);
     setDonorName('');
     setDonorEmail('');
+    setDonorCpf('');
     setDonation(null);
   }
 
@@ -59,6 +63,10 @@ export function DonationFlowModal({ isOpen, onClose }: DonationFlowModalProps) {
       showToast('Informe seu nome e e-mail para continuar.', 'error');
       return;
     }
+    if (needsCpf && !donorCpf) {
+      showToast('Informe seu CPF para gerar a cobrança.', 'error');
+      return;
+    }
 
     setIsSubmitting(true);
     try {
@@ -67,6 +75,7 @@ export function DonationFlowModal({ isOpen, onClose }: DonationFlowModalProps) {
         payment_method: paymentMethod,
         donor_name: user ? undefined : donorName,
         donor_email: user ? undefined : donorEmail,
+        donor_cpf: needsCpf ? donorCpf : undefined,
       });
       setDonation(created);
       setStep(3);
@@ -117,11 +126,25 @@ export function DonationFlowModal({ isOpen, onClose }: DonationFlowModalProps) {
         <div className="flex flex-col gap-5">
           <PaymentMethodTabs selected={paymentMethod} onSelect={setPaymentMethod} />
 
-          {!user && (
+          {(!user || needsCpf) && (
             <div className="flex flex-col gap-3 border-t border-white/10 pt-4">
               <p className="text-xs uppercase tracking-widest text-slate-400">Seus dados</p>
-              <Input label="Nome completo" value={donorName} onChange={(e) => setDonorName(e.target.value)} name="donor_name" required />
-              <Input label="E-mail" type="email" value={donorEmail} onChange={(e) => setDonorEmail(e.target.value)} name="donor_email" required />
+              {!user && (
+                <>
+                  <Input label="Nome completo" value={donorName} onChange={(e) => setDonorName(e.target.value)} name="donor_name" required />
+                  <Input label="E-mail" type="email" value={donorEmail} onChange={(e) => setDonorEmail(e.target.value)} name="donor_email" required />
+                </>
+              )}
+              {needsCpf && (
+                <Input
+                  label="CPF"
+                  value={donorCpf}
+                  onChange={(e) => setDonorCpf(e.target.value)}
+                  name="donor_cpf"
+                  placeholder="000.000.000-00"
+                  required
+                />
+              )}
             </div>
           )}
 

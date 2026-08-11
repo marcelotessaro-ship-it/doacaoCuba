@@ -1,4 +1,4 @@
-import { Bitcoin, CreditCard, QrCode, Receipt } from 'lucide-react';
+import { CreditCard, QrCode, Receipt } from 'lucide-react';
 import { PAYMENT_METHOD_META } from '../../utils/constants';
 import type { PaymentMethod } from '../../utils/types';
 
@@ -11,7 +11,6 @@ const ICONS: Record<PaymentMethod, typeof QrCode> = {
   pix: QrCode,
   credit_card: CreditCard,
   boleto: Receipt,
-  crypto: Bitcoin,
 };
 
 export function PaymentMethodTabs({ selected, onSelect }: PaymentMethodTabsProps) {

@@ -6,13 +6,13 @@ export const PAYMENT_METHOD_META: Record<PaymentMethod, { label: string; descrip
   pix: { label: 'Pix', description: 'Transferência instantânea' },
   credit_card: { label: 'Cartão de crédito', description: 'Débito na fatura' },
   boleto: { label: 'Boleto', description: 'Vencimento em até 3 dias úteis' },
-  crypto: { label: 'Criptomoeda', description: 'Bitcoin, USDT e outras' },
 };
 
 export const DONATION_STATUS_META: Record<DonationStatus, { label: string; className: string }> = {
   concluido: { label: 'Concluído', className: 'bg-emerald-500/15 text-emerald-400 border-emerald-500/30' },
   processando: { label: 'Processando', className: 'bg-blue-500/15 text-blue-400 border-blue-500/30' },
   pendente: { label: 'Pendente', className: 'bg-amber-500/15 text-amber-400 border-amber-500/30' },
+  cancelado: { label: 'Cancelado', className: 'bg-rose-500/15 text-rose-400 border-rose-500/30' },
 };
 
 export const BRAZILIAN_STATES = [

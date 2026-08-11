@@ -10,16 +10,54 @@ use Illuminate\Support\Str;
 
 class DonationService
 {
+    public function __construct(private readonly AsaasService $asaasService) {}
+
     /**
      * @param  array<string, mixed>  $data
      */
     public function create(array $data, ?User $user): Donation
     {
+        $donorCpf = $user?->cpf ?? $data['donor_cpf'];
+        $donorName = $user?->name ?? $data['donor_name'];
+        $donorEmail = $user?->email ?? $data['donor_email'];
+
+        $customer = $this->asaasService->findOrCreateCustomer(array_filter([
+            'name' => $donorName,
+            'cpfCnpj' => preg_replace('/\D/', '', (string) $donorCpf),
+            'email' => $donorEmail,
+            'postalCode' => $user?->cep ?? $data['donor_cep'] ?? null,
+            'address' => $user?->street ?? $data['donor_street'] ?? null,
+            'addressNumber' => $user?->number ?? $data['donor_number'] ?? null,
+            'province' => $user?->neighborhood ?? $data['donor_neighborhood'] ?? null,
+        ]));
+
+        $transactionHash = $this->generateTransactionHash($data['payment_method']);
+
+        $payment = $this->asaasService->createPayment([
+            'customer' => $customer['id'],
+            'billingType' => $this->billingTypeFor($data['payment_method']),
+            'value' => (float) $data['amount'],
+            'dueDate' => $this->dueDateFor($data['payment_method']),
+            'description' => 'Doação — doacaoCuba',
+            'externalReference' => $transactionHash,
+        ]);
+
+        $pixQrCode = null;
+        $boletoIdentificationField = null;
+
+        if ($data['payment_method'] === 'pix') {
+            $pixQrCode = $this->asaasService->fetchPixQrCode($payment['id']);
+        }
+
+        if ($data['payment_method'] === 'boleto') {
+            $boletoIdentificationField = $this->asaasService->fetchBoletoIdentificationField($payment['id']);
+        }
+
         return Donation::create([
             'user_id' => $user?->id,
-            'donor_name' => $user?->name ?? $data['donor_name'],
-            'donor_email' => $user?->email ?? $data['donor_email'],
-            'donor_cpf' => $user?->cpf ?? $data['donor_cpf'] ?? null,
+            'donor_name' => $donorName,
+            'donor_email' => $donorEmail,
+            'donor_cpf' => $donorCpf,
             'donor_street' => $user?->street ?? $data['donor_street'] ?? null,
             'donor_number' => $user?->number ?? $data['donor_number'] ?? null,
             'donor_neighborhood' => $user?->neighborhood ?? $data['donor_neighborhood'] ?? null,
@@ -29,11 +67,36 @@ class DonationService
             'amount' => $data['amount'],
             'currency' => 'BRL',
             'payment_method' => $data['payment_method'],
-            'status' => 'concluido',
+            'status' => 'pendente',
             'frequency' => $data['frequency'] ?? 'unica',
             'is_anonymous' => $data['is_anonymous'] ?? false,
-            'transaction_hash' => $this->generateTransactionHash($data['payment_method']),
+            'transaction_hash' => $transactionHash,
+            'asaas_customer_id' => $customer['id'],
+            'asaas_payment_id' => $payment['id'],
+            'invoice_url' => $payment['invoiceUrl'] ?? null,
+            'pix_qr_code' => $pixQrCode['encodedImage'] ?? null,
+            'pix_copy_paste' => $pixQrCode['payload'] ?? null,
+            'boleto_url' => $payment['bankSlipUrl'] ?? null,
+            'boleto_barcode' => $boletoIdentificationField['identificationField'] ?? null,
         ]);
+    }
+
+    private function billingTypeFor(string $paymentMethod): string
+    {
+        return match ($paymentMethod) {
+            'pix' => 'PIX',
+            'boleto' => 'BOLETO',
+            'credit_card' => 'CREDIT_CARD',
+            default => 'UNDEFINED',
+        };
+    }
+
+    private function dueDateFor(string $paymentMethod): string
+    {
+        return match ($paymentMethod) {
+            'boleto' => now()->addDays(3)->toDateString(),
+            default => now()->toDateString(),
+        };
     }
 
     public function listForUser(User $user, int $perPage = 15): LengthAwarePaginator

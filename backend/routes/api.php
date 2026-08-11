@@ -3,6 +3,7 @@
 use App\Http\Controllers\Api\Admin\DonationController as AdminDonationController;
 use App\Http\Controllers\Api\Admin\StatsController;
 use App\Http\Controllers\Api\Admin\VisitorController;
+use App\Http\Controllers\Api\AsaasWebhookController;
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\DonationController;
 use App\Http\Controllers\Api\ProfileController;
@@ -19,6 +20,8 @@ Route::prefix('auth')->group(function () {
 
 Route::post('/donations', [DonationController::class, 'store']);
 Route::middleware('auth:sanctum')->get('/donations/me', [DonationController::class, 'myHistory']);
+
+Route::post('/webhooks/asaas', [AsaasWebhookController::class, 'handle']);
 
 Route::middleware('auth:sanctum')->group(function () {
     Route::get('/profile', [ProfileController::class, 'show']);

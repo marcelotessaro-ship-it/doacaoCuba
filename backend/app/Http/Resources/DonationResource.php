@@ -32,6 +32,11 @@ class DonationResource extends JsonResource
             'frequency' => $this->frequency,
             'is_anonymous' => (bool) $this->is_anonymous,
             'transaction_hash' => $this->transaction_hash,
+            'invoice_url' => $this->invoice_url,
+            'pix_qr_code' => $this->pix_qr_code,
+            'pix_copy_paste' => $this->pix_copy_paste,
+            'boleto_url' => $this->boleto_url,
+            'boleto_barcode' => $this->boleto_barcode,
             'donor' => new UserResource($this->whenLoaded('user')),
             'created_at' => $this->created_at?->toIso8601String(),
         ];

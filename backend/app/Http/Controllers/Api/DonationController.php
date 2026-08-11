@@ -9,6 +9,7 @@ use App\Services\DonationService;
 use App\Traits\ApiResponse;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use RuntimeException;
 
 class DonationController extends Controller
 {
@@ -22,11 +23,15 @@ class DonationController extends Controller
         // token is present, but never requires one (RF-06 — "Doe agora" works pre-login).
         $user = $request->user('sanctum');
 
-        $donation = $this->donationService->create($request->validated(), $user);
+        try {
+            $donation = $this->donationService->create($request->validated(), $user);
+        } catch (RuntimeException $e) {
+            return $this->error($e->getMessage(), 502);
+        }
 
         return $this->success(
             ['donation' => new DonationResource($donation)],
-            'Doação registrada com sucesso. Muito obrigado pelo seu apoio!',
+            'Cobrança gerada com sucesso. Conclua o pagamento para confirmar sua doação.',
             201,
         );
     }

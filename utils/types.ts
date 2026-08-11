@@ -22,8 +22,8 @@ export interface User {
   created_at: string;
 }
 
-export type PaymentMethod = 'pix' | 'credit_card' | 'boleto' | 'crypto';
-export type DonationStatus = 'pendente' | 'processando' | 'concluido';
+export type PaymentMethod = 'pix' | 'credit_card' | 'boleto';
+export type DonationStatus = 'pendente' | 'processando' | 'concluido' | 'cancelado';
 export type DonationFrequency = 'unica' | 'mensal';
 
 export interface Donation {
@@ -39,6 +39,11 @@ export interface Donation {
   frequency: DonationFrequency;
   is_anonymous: boolean;
   transaction_hash: string;
+  invoice_url: string | null;
+  pix_qr_code: string | null;
+  pix_copy_paste: string | null;
+  boleto_url: string | null;
+  boleto_barcode: string | null;
   donor: User | null;
   created_at: string;
 }

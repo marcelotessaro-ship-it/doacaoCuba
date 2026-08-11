@@ -11,6 +11,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
     'user_id', 'donor_name', 'donor_email', 'donor_cpf',
     'donor_street', 'donor_number', 'donor_neighborhood', 'donor_city', 'donor_state_uf', 'donor_cep',
     'amount', 'currency', 'payment_method', 'status', 'frequency', 'is_anonymous', 'transaction_hash',
+    'asaas_customer_id', 'asaas_payment_id', 'invoice_url', 'pix_qr_code', 'pix_copy_paste', 'boleto_url', 'boleto_barcode',
 ])]
 class Donation extends Model
 {

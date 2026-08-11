@@ -16,14 +16,17 @@ class DonationRequest extends FormRequest
      */
     public function rules(): array
     {
+        $user = $this->user('sanctum');
+        $donorCpfRequired = ! $user || ! $user->cpf;
+
         return [
             'amount' => ['required', 'numeric', 'min:1'],
-            'payment_method' => ['required', 'in:pix,credit_card,boleto,crypto'],
+            'payment_method' => ['required', 'in:pix,credit_card,boleto'],
             'frequency' => ['nullable', 'in:unica,mensal'],
             'is_anonymous' => ['nullable', 'boolean'],
             'donor_name' => ['required', 'string', 'max:255'],
             'donor_email' => ['required', 'email', 'max:255'],
-            'donor_cpf' => ['nullable', 'string', 'max:20'],
+            'donor_cpf' => [$donorCpfRequired ? 'required' : 'nullable', 'string', 'max:20'],
             'donor_street' => ['nullable', 'string', 'max:255'],
             'donor_number' => ['nullable', 'string', 'max:20'],
             'donor_neighborhood' => ['nullable', 'string', 'max:255'],
@@ -47,6 +50,7 @@ class DonationRequest extends FormRequest
             'donor_name.required' => 'Informe seu nome.',
             'donor_email.required' => 'Informe um e-mail válido.',
             'donor_email.email' => 'Informe um e-mail válido.',
+            'donor_cpf.required' => 'Informe seu CPF para gerar a cobrança.',
         ];
     }
 }
