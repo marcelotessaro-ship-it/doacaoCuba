@@ -114,6 +114,7 @@ deploy-first-ip:
 deploy-full:
 	@echo "==> [1/6] Preparando ambiente"
 	@START=$$(date +%s); \
+	docker compose -f docker-compose.prod.yml exec app chown -R www-data:www-data storage bootstrap/cache; \
 	docker compose -f docker-compose.prod.yml exec app chmod -R 775 storage bootstrap/cache; \
 	docker compose -f docker-compose.prod.yml exec app rm -f public/hot; \
 	if [ ! -f docker/nginx/active.conf ]; then \
@@ -136,6 +137,7 @@ deploy-full:
 	docker compose -f docker-compose.prod.yml exec app php artisan storage:link; \
 	docker compose -f docker-compose.prod.yml up -d mysql redis nginx; \
 	docker compose -f docker-compose.prod.yml up -d --force-recreate app scheduler queue; \
+	docker compose -f docker-compose.prod.yml exec app chown -R www-data:www-data storage bootstrap/cache; \
 	docker compose -f docker-compose.prod.yml exec app chmod -R 775 storage bootstrap/cache; \
 	docker compose -f docker-compose.prod.yml exec nginx nginx -s reload; \
 	echo "==> [6/6] Saindo do modo de manutenção"; \
