@@ -93,6 +93,7 @@ deploy-first:
 	sed "s/__DOMAIN__/$$DOMAIN/g" docker/nginx/initial.conf > docker/nginx/active.conf
 	docker compose -f docker-compose.prod.yml build
 	docker compose -f docker-compose.prod.yml up -d
+	docker compose -f docker-compose.prod.yml exec app composer install --no-dev --optimize-autoloader --no-interaction
 	docker compose -f docker-compose.prod.yml exec app php artisan key:generate --force
 	docker compose -f docker-compose.prod.yml run --rm certbot certonly --webroot -w /var/www/certbot -d $$DOMAIN
 	sed "s/__DOMAIN__/$$DOMAIN/g" docker/nginx/production.conf > docker/nginx/active.conf
@@ -105,6 +106,7 @@ deploy-first-ip:
 	sed "s/__IP__/$$IP/g" docker/nginx/ip.conf > docker/nginx/active.conf
 	docker compose -f docker-compose.prod.yml build
 	docker compose -f docker-compose.prod.yml up -d
+	docker compose -f docker-compose.prod.yml exec app composer install --no-dev --optimize-autoloader --no-interaction
 	docker compose -f docker-compose.prod.yml exec app php artisan key:generate --force
 	@$(MAKE) deploy-full
 	docker compose -f docker-compose.prod.yml exec app php artisan config:cache
