@@ -59,6 +59,7 @@ O frontend fica na raiz do repositório (sem pasta `frontend/` ou `src/`), confo
 | `make deploy` | `git pull` + deploy completo (produção) |
 | `make deploy-rebuild` | Rebuild de imagens + deploy completo |
 | `make deploy-first` | Primeiro deploy: certificado TLS + deploy completo (requer `DOMAIN=...`) |
+| `make deploy-first-ip` | Primeiro deploy sem domínio: HTTP puro por IP, sem TLS (requer `IP=...`) |
 
 ## 6. Convenções de código
 

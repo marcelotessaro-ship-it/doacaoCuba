@@ -1,5 +1,5 @@
 .PHONY: up up-prod down migrate seed fresh deploy send db thinker tinker shell \
-        deploy-full deploy-rebuild deploy-first lint
+        deploy-full deploy-rebuild deploy-first deploy-first-ip lint
 
 # ---------------------------------------------------------------------------
 # Development
@@ -97,6 +97,15 @@ deploy-first:
 	docker compose -f docker-compose.prod.yml run --rm certbot certonly --webroot -w /var/www/certbot -d $$DOMAIN
 	sed "s/__DOMAIN__/$$DOMAIN/g" docker/nginx/production.conf > docker/nginx/active.conf
 	docker compose -f docker-compose.prod.yml exec nginx nginx -s reload
+	@$(MAKE) deploy-full
+	docker compose -f docker-compose.prod.yml exec app php artisan config:cache
+
+deploy-first-ip:
+	@test -n "$$IP" || { echo "Defina IP=seu-ip antes de rodar make deploy-first-ip"; exit 1; }
+	sed "s/__IP__/$$IP/g" docker/nginx/ip.conf > docker/nginx/active.conf
+	docker compose -f docker-compose.prod.yml build
+	docker compose -f docker-compose.prod.yml up -d
+	docker compose -f docker-compose.prod.yml exec app php artisan key:generate --force
 	@$(MAKE) deploy-full
 	docker compose -f docker-compose.prod.yml exec app php artisan config:cache
 
